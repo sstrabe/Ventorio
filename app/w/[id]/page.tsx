@@ -1,15 +1,16 @@
 'use client';
 
-import Menu, { Workspace } from "./menu"
+import Menu from "./menu"
+import { Workspace, Event } from "@/types/database";
 
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { DocumentData, doc, getDoc } from "firebase/firestore";
+import { DocumentData, doc, getDoc, query, getDocs, collection } from "firebase/firestore";
 import { firestore } from "@/firebase"
 
 export default function Page() {
     const { id: workspaceId } = useParams<{ id: string }>()
-    const [data, setData] = useState<DocumentData|null>(null)
+    const [data, setData] = useState<DocumentData | null>(null)
 
     useEffect(() => {
         const fetchDocument = async () => {
@@ -19,9 +20,17 @@ export default function Page() {
             if (!docu.exists()) return setData(null)
 
             document.title = `Ventorio | ${docu.data().name}`
-            
+
+            const q = query(collection(firestore, 'workspaces', workspaceId, 'events'))
+            const snap = await getDocs(q)
+
+            const events = snap.docs.map((doc) => (
+                { ...doc.data(), id: doc.id } as Event
+            ))
+
             const docData = docu.data()
             docData.id = workspaceId
+            docData.events = events
 
             setData(docData)
         }
@@ -29,13 +38,13 @@ export default function Page() {
         fetchDocument()
     }, [workspaceId])
 
-    console.log(data)
+    if (!data) return (
+        <div>Loading...</div>
+    )
 
     return (
         <>
-            {data &&
-            <Menu data={data as Workspace}/>
-        }
+            <Menu data={data as Workspace} />
         </>
     )
 }
