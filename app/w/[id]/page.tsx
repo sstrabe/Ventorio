@@ -29,11 +29,13 @@ export default function Page() {
         fetchDocument()
     }, [workspaceId])
 
+    console.log(data)
+
     return (
-        <div>
+        <>
             {data &&
             <Menu data={data as Workspace}/>
         }
-        </div>
+        </>
     )
 }
