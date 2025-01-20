@@ -2,11 +2,11 @@
 
 import Menu from "./menu"
 import { Workspace, Event } from "@/types/database";
-
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { DocumentData, doc, getDoc, query, getDocs, collection } from "firebase/firestore";
 import { firestore } from "@/firebase"
+import ModalProvider from "@/contexts/modal";
 
 export default function Page() {
     const { id: workspaceId } = useParams<{ id: string }>()
@@ -44,7 +44,9 @@ export default function Page() {
 
     return (
         <>
-            <Menu data={data as Workspace} />
+            <ModalProvider>
+                <Menu data={data as Workspace} />
+            </ModalProvider>
         </>
     )
 }

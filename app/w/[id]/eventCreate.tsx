@@ -7,6 +7,7 @@ import { Diff, Template } from "@/types/database";
 import { FaPenToSquare } from "react-icons/fa6";
 import { addDoc, collection } from "firebase/firestore"
 import { firestore } from "@/firebase";
+import { useModal } from "@/contexts/modal";
 
 export default function EventCreateModal({ visible, templates, workspaceId }: { visible: boolean, templates: Template[], workspaceId: string }) {
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -17,6 +18,8 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
     const [name, setName] = useState<string>();
     const [diff, setDiff] = useState<Diff>({});
     const [mod, setMod] = useState<string>();
+
+    const [, setModal] = useModal();
 
     useEffect(() => {
         const newDiff: Diff = Object.fromEntries(Object.entries(template?.items || {}).map(([key, amount]) => [key, { amount: Math.ceil(amount * attendance), replace: true }]))
@@ -45,7 +48,11 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
 
         addDoc(collection(firestore, 'workspaces', workspaceId, 'events'), {
             name, date, template: template?.name ?? 'None', attendance, diff
-        }).catch((err) => setErrorMessage(err))
+        })
+            .catch((err) => setErrorMessage(err))
+            .then(() => setModal(''))
+
+        
     }
 
     function onModClick(e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -61,7 +68,7 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
     return (
         <Modal visible={visible}>
             <form onSubmit={onSubmit} className="m-10 w-[75vw] sm:w-[50vw] lg:w-[30vw] xl:[10vw] text-white rounded-lg p-8 bg-transparent border-solid border-2 border-[rgba(255,255,255,.2)] backdrop-blur-3xl shadow-xl max-h-[75vh] overflow-scroll">
-                <h1 className="text-2xl text-center">Create Event</h1>
+                <h1 className="text-2xl text-center w-full">Create Event</h1>
                 {errorMessage &&
                     <div className="w-[100%] mt-8 relative h-10 flex justify-start items-center text-white">
                         <span className="w-full h-full bg-[rgba(255,0,0,.2)] outline-none border-2 border-solid border-[rgba(255,0,0,.8)] rounded-full pt-5 pb-5 pl-5 pr-10 inline-flex items-center">{errorMessage}</span>
