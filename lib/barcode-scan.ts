@@ -2,7 +2,7 @@ import { drawBarcodeBoundary } from "./barcode-boundary";
 import { BarcodeDetector, DetectedBarcode } from "barcode-detector/pure";
 
 const detector = new BarcodeDetector({
-  formats: ["code_39", "qr_code", "code_128"]
+  formats: ["code_39", "qr_code", "code_128", "rm_qr_code"]
 })
 
 export type BarcodeScanParams = {
