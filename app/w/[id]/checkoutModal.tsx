@@ -4,20 +4,21 @@ import { Event } from "@/types/database";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { FormEvent } from "react";
 import { Scanner } from "./scanner";
+import { DetectedBarcode } from "barcode-detector";
 
 export default function CheckoutModal({ visible }: { visible: boolean }) {
     const [modalData] = useModal();
 
     const event = modalData.data?.event as Event;
     if (!event) return;
-    console.log(event)
 
     function onSubmit(e: FormEvent) {
         e.preventDefault();
     }
 
-    function onScan(data: string) {
-        console.log(data);
+    function onScan(data: DetectedBarcode[]) {
+        if (data.length === 0) return;
+        console.log(data)
     };
 
     return (

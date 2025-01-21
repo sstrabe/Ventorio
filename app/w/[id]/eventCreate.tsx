@@ -39,10 +39,16 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
         setDiff(newDiff)
     }, [attendance, template])
 
-    function modifyDiff(key: string, newValue: { amount: number; replace: boolean; }) {
-        delete diff[key]
-        setDiff({ ...diff, key: newValue })
-    }
+    function modifyDiff(key: string, newValue?: { amount: number; replace: boolean; }) {
+        const obj = { ...diff };
+        delete obj[key];
+
+        if (newValue) {
+            obj[key] = newValue;
+        }
+
+        setDiff(obj)
+    };
 
     function onSubmit(e: FormEvent) {
         e.preventDefault();
@@ -57,8 +63,7 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
     }
 
     function onModClick(e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) {
-        console.log((e.target as HTMLElement).closest('span')?.id)
-        modifyDiff((e.target as HTMLElement || null)?.closest('span')!.id, { amount: 0, replace: true })
+        modifyDiff((e.target as HTMLElement || null)?.closest('span')!.id)
     }
 
     const filteredTemplates =

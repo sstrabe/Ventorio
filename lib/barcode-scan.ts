@@ -15,9 +15,6 @@ export const scanBarcode = async ({
   canvasScanImageData,
 }: BarcodeScanParams): Promise<undefined | DetectedBarcode[]> => {
   const scanResult = await detector.detect(canvasScanImageData)
-  console.log(scanResult)
-
-  console.log(scanResult.map((sc) => sc.rawValue))
 
   drawBarcodeBoundary({
     canvasMaskNode,

@@ -28,7 +28,7 @@ type UseScannerParams = {
     video: {
         maxWidth: number;
     };
-    onScan: (result: string) => void;
+    onScan: (result: DetectedBarcode[]) => void;
 };
 
 const barcodeScannerWorker = new Worker(
@@ -45,7 +45,6 @@ export const useScanner = ({ video, onScan }: UseScannerParams) => {
 
     useEffect(() => {
         barcodeScannerWorker.addEventListener("message", (event) => {
-            console.log({ level: "INFO", message: `Result ${event.data}` });
             onScan(event.data);
         });
     }, [onScan]);
@@ -122,7 +121,7 @@ export const useScanner = ({ video, onScan }: UseScannerParams) => {
                     isFirstVideoTick.current = false;
                 } else {
                     // serializable structured clone
-                    barcodeScannerWorker.postMessage({ canvasScanImageData });
+                    barcodeScannerWorker.postMessage({ canvasScanImageData: structuredClone(canvasScanImageData) });
                 }
             });
         },
