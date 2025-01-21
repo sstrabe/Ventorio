@@ -1,5 +1,5 @@
 import { BarcodeScanParams } from "./barcode-scan";
-import { DetectedBarcode } from "@undecaf/barcode-detector-polyfill";
+import { DetectedBarcode } from "barcode-detector/pure";
 
 export const drawBarcodeBoundary = ({
   canvasMaskNode,

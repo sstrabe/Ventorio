@@ -10,6 +10,6 @@ export const Scanner = memo(function Scanner({ onScan }: { onScan: (e: string) =
     })
 
     return (
-        <video ref={initScanner}></video>
+        <video ref={initScanner} className="w-auto h-auto min-w-full min-h-full"></video>
     )
 })

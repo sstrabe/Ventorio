@@ -10,6 +10,7 @@ import Image from "next/image";
 import { Workspace } from "@/types/database";
 import EventCreateModal from "./eventCreate";
 import { useModal } from "@/contexts/modal";
+import CheckoutModal from "./checkoutModal";
 
 export default function Menu({ data }: { data: Workspace }) {
     const [modal, setModal] = useModal();
@@ -54,10 +55,10 @@ export default function Menu({ data }: { data: Workspace }) {
                             <li className="text-white bg-background rounded-md p-2 w-full flex flex-row gap-2 items-center">
                                 <FaAngleDown />
                                 <span>Events</span>
-                                <button className="flex flex-grow justify-end flex-row w-auto hover:cursor-pointer" onClick={() => setModal('eventCreate')}><FaPlus /></button>
+                                <button className="flex flex-grow justify-end flex-row w-auto hover:cursor-pointer" onClick={() => setModal({ name: 'eventCreate' })}><FaPlus /></button>
                             </li>
                             {data.events.map((e) => (
-                                <a key={e.id} className="bg-background rounded-md p-1 w-[95%]" href={`/w/${data.id}/events/${e.id}`}>{e.name}</a>
+                                <button key={e.id} className="bg-background rounded-md p-1 w-[90%] text-left px-4" onClick={() => setModal({ name: 'checkoutModal', data: { event: e } })}>{e.name}</button>
                             ))}
                         </ul>
                     </div>
@@ -68,7 +69,8 @@ export default function Menu({ data }: { data: Workspace }) {
                 </button>
             </nav>
 
-            <EventCreateModal templates={data.templates} visible={modal==='eventCreate'}  workspaceId={data.id}></EventCreateModal>
+            <EventCreateModal templates={data.templates} visible={modal.name==='eventCreate'}  workspaceId={data.id}></EventCreateModal>
+            <CheckoutModal visible={modal.name==='checkoutModal'}></CheckoutModal>
         </div>
     )
 }

@@ -110,7 +110,6 @@ export const useScanner = ({ video, onScan }: UseScannerParams) => {
                 );
 
                 if (isFirstVideoTick.current) {
-                    console.log('Test')
                     barcodeScannerWorker.postMessage(
                         {
                             canvasMaskNode: offscreenCanvas,
@@ -123,7 +122,6 @@ export const useScanner = ({ video, onScan }: UseScannerParams) => {
                     isFirstVideoTick.current = false;
                 } else {
                     // serializable structured clone
-                    console.log('Test')
                     barcodeScannerWorker.postMessage({ canvasScanImageData });
                 }
             });

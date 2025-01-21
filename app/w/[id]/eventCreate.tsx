@@ -1,6 +1,7 @@
 import Modal from "@/app/Modal";
 import { MouseEvent as ReactMouseEvent, FormEvent, useEffect, useState } from "react";
 import { FaExclamationCircle, FaCheck, FaChevronDown, FaCalendar, FaUser, FaMinusCircle } from "react-icons/fa";
+import { FaCircleXmark } from "react-icons/fa6";
 import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Radio, RadioGroup } from '@headlessui/react';
 import clsx from 'clsx';
 import { Diff, Template } from "@/types/database";
@@ -50,7 +51,7 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
             name, date, template: template?.name ?? 'None', attendance, diff
         })
             .catch((err) => setErrorMessage(err))
-            .then(() => setModal(''))
+            .then(() => setModal({ name: '' }))
 
         
     }
@@ -68,7 +69,7 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
     return (
         <Modal visible={visible}>
             <form onSubmit={onSubmit} className="m-10 w-[75vw] sm:w-[50vw] lg:w-[30vw] xl:[10vw] text-white rounded-lg p-8 bg-transparent border-solid border-2 border-[rgba(255,255,255,.2)] backdrop-blur-3xl shadow-xl max-h-[75vh] overflow-scroll">
-                <h1 className="text-2xl text-center w-full">Create Event</h1>
+                <h1 className="text-2xl text-center w-full flex flex-row justify-end"><span className="flex-grow">Create Event</span> <button onClick={(e) => {e.preventDefault(); setModal({ name: '' })}} className="flex justify-center items-center"><FaCircleXmark fontSize="1.2rem"></FaCircleXmark></button></h1>
                 {errorMessage &&
                     <div className="w-[100%] mt-8 relative h-10 flex justify-start items-center text-white">
                         <span className="w-full h-full bg-[rgba(255,0,0,.2)] outline-none border-2 border-solid border-[rgba(255,0,0,.8)] rounded-full pt-5 pb-5 pl-5 pr-10 inline-flex items-center">{errorMessage}</span>

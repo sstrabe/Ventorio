@@ -1,13 +1,20 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from "react";
 
-const ModalContext = createContext<[string, Dispatch<SetStateAction<string>>] | null>(null)
+interface ModalData {
+    name: string
+    data?: {
+        [key: string]: unknown
+    }
+}
+
+const ModalContext = createContext<[ModalData, Dispatch<SetStateAction<ModalData>>] | null>(null)
 
 export function useModal() {
-    return useContext(ModalContext!) as [string, Dispatch<SetStateAction<string>>]
+    return useContext(ModalContext!) as [ModalData, Dispatch<SetStateAction<ModalData>>]
 }
 
 export default function ModalProvider({ children }: { children: ReactNode }) {
-    const [currentModal, setModal] = useState<string>('')
+    const [currentModal, setModal] = useState<ModalData>({ name: '' })
 
     return (
         <ModalContext.Provider value={[currentModal, setModal]}>

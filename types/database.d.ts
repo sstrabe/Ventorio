@@ -22,7 +22,7 @@ export interface Event {
     id: string
     name?: string,
     attendance?: number,
-    diff?: Blank,
+    diff?: Diff,
     template?: string,
     manager?: string,
     date?: Date
