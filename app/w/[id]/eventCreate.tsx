@@ -9,6 +9,7 @@ import { FaPenToSquare } from "react-icons/fa6";
 import { addDoc, collection } from "firebase/firestore"
 import { firestore } from "@/firebase";
 import { useModal } from "@/contexts/modal";
+import { useAuth } from "@/contexts/auth";
 
 export default function EventCreateModal({ visible, templates, workspaceId }: { visible: boolean, templates: Template[], workspaceId: string }) {
     const [errorMessage, setErrorMessage] = useState<string>('');
@@ -21,15 +22,16 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
     const [mod, setMod] = useState<string>();
 
     const [, setModal] = useModal();
+    const auth = useAuth()
 
     useEffect(() => {
-        const newDiff: Diff = Object.fromEntries(Object.entries(template?.items || {}).map(([key, amount]) => [key, { amount: Math.ceil(amount * attendance), replace: true }]))
+        const newDiff: Diff = Object.fromEntries(Object.entries(template?.items || {}).map(([key, val]) => [key, { amount: Math.ceil(val.amount * (val.constant ? 1 : attendance)), replace: true }]))
 
         for (const key in diff) {
             const val = diff[key]
 
             if (template?.items[key]) {
-                newDiff[key] = val?.replace ? { amount: Math.ceil(template.items[key] * attendance), replace: true } : val
+                newDiff[key] = val?.replace ? { amount: Math.ceil(template.items[key].amount * (template.items[key].constant ? 1 : attendance)), replace: true } : val
             } else {
                 if (val?.replace) delete newDiff[key]
                 else newDiff[key] = val
@@ -54,7 +56,8 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
         e.preventDefault();
 
         addDoc(collection(firestore, 'workspaces', workspaceId, 'events'), {
-            name, date, template: template?.name ?? 'None', attendance, diff
+            name, date, template: template?.name ?? 'None', attendance, diff,
+            instructor: auth.currentUser. 
         })
             .catch((err) => setErrorMessage(err))
             .then(() => setModal({ name: '' }))

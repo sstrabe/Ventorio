@@ -1,5 +1,24 @@
 interface Blank {
-    [key: string]: number
+    [key: string]: {
+        amount: number,
+        constant: boolean
+    }
+}
+
+export type Equipment = MultiUse | OneUse
+
+export interface MultiUse {
+    serial: string
+    type: string
+    lastUsed: Date
+    lastCleaned: Date
+    lastMaintenanced: Date
+}
+
+export interface OneUse {
+    serial: string
+    type: string
+    amount: string
 }
 
 export interface Workspace {
@@ -8,7 +27,8 @@ export interface Workspace {
     name: string,
     events: Event[],
     templates: Template[],
-    itemTypes: ItemType[]
+    itemTypes: ItemType[],
+    equipment: Map<string, Equipment>
 }
 
 export interface Diff {

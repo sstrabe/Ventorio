@@ -70,7 +70,7 @@ export default function Menu({ data }: { data: Workspace }) {
             </nav>
 
             <EventCreateModal templates={data.templates} visible={modal.name==='eventCreate'}  workspaceId={data.id}></EventCreateModal>
-            <CheckoutModal visible={modal.name==='checkoutModal'}></CheckoutModal>
+            <CheckoutModal visible={modal.name==='checkoutModal'} workspace={data}></CheckoutModal>
         </div>
     )
 }

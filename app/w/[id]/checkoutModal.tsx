@@ -1,17 +1,18 @@
 import Modal from "@/app/Modal";
 import { useModal } from "@/contexts/modal";
-import { Event } from "@/types/database";
+import { Event, Workspace } from "@/types/database";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { FormEvent, useState } from "react";
 import { Scanner } from "./scanner";
 import { DetectedBarcode } from "barcode-detector";
+import { updateDoc } from "firebase/firestore";
 
 interface EquipmentTag {
     type: string
     serial: string
 }
 
-export default function CheckoutModal({ visible }: { visible: boolean }) {
+export default function CheckoutModal({ visible, workspace }: { visible: boolean, workspace: Workspace }) {
     const [modalData] = useModal();
     const [items, setItems] = useState<EquipmentTag[]>([]);
 
@@ -20,13 +21,17 @@ export default function CheckoutModal({ visible }: { visible: boolean }) {
 
     function onSubmit(e: FormEvent) {
         e.preventDefault();
+
+        items.forEach((item) => {
+            updateDoc()
+            workspace.equipment.get(item.serial)
+        })
     }
 
     function onScan(data: DetectedBarcode[]) {
         if (data.length === 0) return;
 
         data.forEach((val) => {
-            console.log(val)
             handleItem(JSON.parse(val.rawValue))
         })
     };
@@ -35,8 +40,8 @@ export default function CheckoutModal({ visible }: { visible: boolean }) {
         if (items.filter(val => val.serial === data.serial).length > 0) return;
         if (!event.diff || (event.diff[data.type]?.amount ?? 0) - items.filter(val => val.type === data.type).length < 0) return;
 
+        items.push(data)
         const newItems = [...items];
-        newItems.push(data);
         setItems(newItems);
 
         const audio = new Audio('/start.mp3');
@@ -60,6 +65,7 @@ export default function CheckoutModal({ visible }: { visible: boolean }) {
                                 id={key}
                                 disabled={true}
                                 className="w-full flex flex-row items-center"
+                                style={val?.amount - items.filter((val) => val.type === key).length === 0 ? { color: 'lightgreen', textDecorationLine: 'line-through' } : { color: 'white' }}
                             >
                                 <span className="w-full pl-5 pr-10">{val?.amount - items.filter((val) => val.type === key).length}x {key}</span>
                             </Radio>
@@ -70,6 +76,8 @@ export default function CheckoutModal({ visible }: { visible: boolean }) {
                 <div className="mt-8 bg-transparent outline-none border-2 border-solid border-[rgba(255,255,255,.2)] rounded-xl text-white overflow-hidden">
                     <Scanner onScan={onScan}></Scanner>
                 </div>
+
+                <button type="submit" className="w-full h-[45px] bg-white mt-5 rounded-full border-none outline-none shadow-sm cursor-pointer text-[#333] text-lg font-semibold">Checkout</button>
             </form>
         </Modal>
     )
