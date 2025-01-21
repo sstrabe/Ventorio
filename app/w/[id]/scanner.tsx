@@ -10,6 +10,6 @@ export const Scanner = memo(function Scanner({ onScan }: { onScan: (e: DetectedB
     })
 
     return (
-        <video ref={initScanner} className="w-auto h-auto min-w-full min-h-full"></video>
+        <video ref={initScanner} playsInline className="w-auto h-auto min-w-full min-h-full"></video>
     )
 })
