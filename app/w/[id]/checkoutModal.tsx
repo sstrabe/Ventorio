@@ -13,12 +13,12 @@ export default function CheckoutModal({ visible }: { visible: boolean }) {
     console.log(event)
 
     function onSubmit(e: FormEvent) {
-
+        e.preventDefault();
     }
 
     function onScan(data: string) {
-
-    }
+        console.log(data);
+    };
 
     return (
         <Modal visible={visible}>

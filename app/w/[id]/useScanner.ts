@@ -109,7 +109,7 @@ export const useScanner = ({ video, onScan }: UseScannerParams) => {
                     canvasScanNode.height
                 );
 
-                if (isFirstVideoTick.current) {
+                if (isFirstVideoTick.current && offscreenCanvas) {
                     barcodeScannerWorker.postMessage(
                         {
                             canvasMaskNode: offscreenCanvas,
