@@ -5,7 +5,6 @@ import { Radio, RadioGroup } from "@headlessui/react";
 import { FormEvent, useState } from "react";
 import { Scanner } from "./scanner";
 import { DetectedBarcode } from "barcode-detector";
-import { updateDoc } from "firebase/firestore";
 
 interface EquipmentTag {
     type: string
@@ -23,7 +22,6 @@ export default function CheckoutModal({ visible, workspace }: { visible: boolean
         e.preventDefault();
 
         items.forEach((item) => {
-            updateDoc()
             workspace.equipment.get(item.serial)
         })
     }
