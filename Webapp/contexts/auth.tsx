@@ -29,7 +29,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }, [])
 
     async function initUser(user: User | null) {
-        const document = await getDoc(doc(firestore, 'users', user?.uid ?? ''));
+
+        const document = await getDoc(doc(firestore, 'users', user?.uid ?? 'blank'));
         if (user && document.exists()) {
             const newUser: User & { data: DatabaseUser } = user as User & { data: DatabaseUser };
             newUser.data = document.data() as DatabaseUser
