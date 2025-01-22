@@ -1,10 +1,12 @@
 import { onAuthStateChanged, User } from "firebase/auth";
+import { User as DatabaseUser } from "@/types/database"
 import { usePathname, useRouter } from "next/navigation";
-import { auth } from "@/firebase";
+import { auth, firestore } from "@/firebase";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 
 interface AuthContext {
-    currentUser: User | null
+    currentUser: User & { data: DatabaseUser } | null
     loading: boolean
 }
 
@@ -15,7 +17,7 @@ export function useAuth() {
 }
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-    const [currentUser, setCurrentUser] = useState<User|null>(null);
+    const [currentUser, setCurrentUser] = useState<User & { data: DatabaseUser }|null>(null);
     const [loading, setLoading] = useState(true);
 
     const pathname = usePathname()
@@ -27,8 +29,12 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
     }, [])
 
     async function initUser(user: User | null) {
-        if (user) {
-            setCurrentUser(user)
+        const document = await getDoc(doc(firestore, 'users', user?.uid ?? ''));
+        if (user && document.exists()) {
+            const newUser: User & { data: DatabaseUser } = user as User & { data: DatabaseUser };
+            newUser.data = document.data() as DatabaseUser
+
+            setCurrentUser(newUser)
 
             if (pathname.startsWith('/auth')) {
                 router.push('/')

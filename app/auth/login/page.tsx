@@ -16,7 +16,6 @@ export default function Page() {
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-
         signInWithEmailAndPassword(auth, email, password)
             .then(() => router.push('/'))
             .catch((err) => {setErrorMessage('Invalid Credentials'); console.log(err)})

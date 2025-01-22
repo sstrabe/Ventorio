@@ -1,37 +1,38 @@
 import Modal from "@/app/Modal";
 import { MouseEvent as ReactMouseEvent, FormEvent, useEffect, useState } from "react";
-import { FaExclamationCircle, FaCheck, FaChevronDown, FaCalendar, FaUser, FaMinusCircle } from "react-icons/fa";
+import { FaExclamationCircle, FaCheck, FaChevronDown, FaCalendar, FaUser, FaMinusCircle, FaCheckCircle } from "react-icons/fa";
 import { FaCircleXmark } from "react-icons/fa6";
-import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Radio, RadioGroup } from '@headlessui/react';
+import { Combobox, ComboboxButton, ComboboxInput, ComboboxOption, ComboboxOptions, Listbox, ListboxButton, ListboxOption, ListboxOptions, Radio, RadioGroup } from '@headlessui/react';
 import clsx from 'clsx';
-import { Diff, Template } from "@/types/database";
+import { Diff, Template, Workspace } from "@/types/database";
 import { FaPenToSquare } from "react-icons/fa6";
 import { addDoc, collection } from "firebase/firestore"
 import { firestore } from "@/firebase";
 import { useModal } from "@/contexts/modal";
 import { useAuth } from "@/contexts/auth";
 
-export default function EventCreateModal({ visible, templates, workspaceId }: { visible: boolean, templates: Template[], workspaceId: string }) {
+export default function EventCreateModal({ visible, templates, workspace }: { visible: boolean, templates: Template[], workspace: Workspace }) {
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [template, setTemplate] = useState<Template>();
-    const [attendance, setAttendance] = useState<number>(1);
+    const [Attendees, setAttendees] = useState<number>(1);
     const [templateQuery, setTemplateQuery] = useState<string>('');
     const [date, setDate] = useState<Date>();
     const [name, setName] = useState<string>();
     const [diff, setDiff] = useState<Diff>({});
-    const [mod, setMod] = useState<string>();
+    const [modKey, setModKey] = useState<string>('');
+    const [modVal, setModVal] = useState<number>();
 
     const [, setModal] = useModal();
     const auth = useAuth()
 
     useEffect(() => {
-        const newDiff: Diff = Object.fromEntries(Object.entries(template?.items || {}).map(([key, val]) => [key, { amount: Math.ceil(val.amount * (val.constant ? 1 : attendance)), replace: true }]))
+        const newDiff: Diff = Object.fromEntries(Object.entries(template?.items || {}).map(([key, val]) => [key, { amount: Math.ceil(val.amount * (val.constant ? 1 : Attendees)), replace: true }]))
 
         for (const key in diff) {
             const val = diff[key]
 
             if (template?.items[key]) {
-                newDiff[key] = val?.replace ? { amount: Math.ceil(template.items[key].amount * (template.items[key].constant ? 1 : attendance)), replace: true } : val
+                newDiff[key] = val?.replace ? { amount: Math.ceil(template.items[key].amount * (template.items[key].constant ? 1 : Attendees)), replace: true } : val
             } else {
                 if (val?.replace) delete newDiff[key]
                 else newDiff[key] = val
@@ -39,7 +40,7 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
         }
 
         setDiff(newDiff)
-    }, [attendance, template])
+    }, [Attendees, template])
 
     function modifyDiff(key: string, newValue?: { amount: number; replace: boolean; }) {
         const obj = { ...diff };
@@ -55,14 +56,14 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
     function onSubmit(e: FormEvent) {
         e.preventDefault();
 
-        addDoc(collection(firestore, 'workspaces', workspaceId, 'events'), {
-            name, date, template: template?.name ?? 'None', attendance, diff,
-            instructor: auth.currentUser. 
+        addDoc(collection(firestore, 'workspaces', workspace.id, 'events'), {
+            name, date, template: template?.name ?? 'None', Attendees, diff,
+            instructor: auth.currentUser?.uid
         })
             .catch((err) => setErrorMessage(err))
             .then(() => setModal({ name: '' }))
 
-        
+
     }
 
     function onModClick(e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -77,7 +78,7 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
     return (
         <Modal visible={visible}>
             <form onSubmit={onSubmit} className="m-10 w-[75vw] sm:w-[50vw] lg:w-[30vw] xl:[10vw] text-white rounded-lg p-8 bg-transparent border-solid border-2 border-[rgba(255,255,255,.2)] backdrop-blur-3xl shadow-xl max-h-[75vh] overflow-scroll">
-                <h1 className="text-2xl text-center w-full flex flex-row justify-end"><span className="flex-grow">Create Event</span> <button onClick={(e) => {e.preventDefault(); setModal({ name: '' })}} className="flex justify-center items-center"><FaCircleXmark fontSize="1.2rem"></FaCircleXmark></button></h1>
+                <h1 className="text-2xl text-center w-full flex flex-row justify-end"><span className="flex-grow">Create Event</span> <button onClick={(e) => { e.preventDefault(); setModal({ name: '' }) }} className="flex justify-center items-center"><FaCircleXmark fontSize="1.2rem"></FaCircleXmark></button></h1>
                 {errorMessage &&
                     <div className="w-[100%] mt-8 relative h-10 flex justify-start items-center text-white">
                         <span className="w-full h-full bg-[rgba(255,0,0,.2)] outline-none border-2 border-solid border-[rgba(255,0,0,.8)] rounded-full pt-5 pb-5 pl-5 pr-10 inline-flex items-center">{errorMessage}</span>
@@ -125,7 +126,7 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
                 </Combobox>
 
                 <div className="w-full mt-8 relative h-10 flex justify-start items-center">
-                    <input type="number" onChange={(e) => { setAttendance(+e.target.value) }} placeholder="Attendance" required className="w-full h-full bg-transparent outline-none border-2 border-solid border-[rgba(255,255,255,.2)] rounded-full text-white pt-5 pb-5 pl-5 pr-10" />
+                    <input type="number" onChange={(e) => { setAttendees(+e.target.value) }} placeholder="Attendees" required className="w-full h-full bg-transparent outline-none border-2 border-solid border-[rgba(255,255,255,.2)] rounded-full text-white pt-5 pb-5 pl-5 pr-10" />
                     <FaUser size="20px" className="ml-[-40px]" />
                 </div>
 
@@ -134,11 +135,38 @@ export default function EventCreateModal({ visible, templates, workspaceId }: { 
                     <FaCalendar size="20px" className="ml-[-40px]" />
                 </div>
 
-                <div className="w-full mt-8 relative h-10 flex justify-start items-center">
-                    <input type="text" onChange={(e) => { setMod(e.target.value) }} placeholder="Modifications" className="w-full h-full bg-transparent outline-none border-2 border-solid border-[rgba(255,255,255,.2)] rounded-full text-white pt-5 pb-5 pl-5 pr-10" />
+                <Listbox value={modKey} onChange={(val) => setModKey(val)}>
+                    <ListboxButton className="h-10 rounded-full w-full flex flex-row justify-between items-center border-2 border-solid border-[rgba(255,255,255,.2)] mt-8 px-5 py-5">
+                        <span className="w-full text-left">{modKey}</span>
+                        <FaChevronDown className="size-4 fill-white/60 group-data-[hover]:fill-white" />
+                    </ListboxButton>
+
+                    <ListboxOptions
+                        anchor="bottom"
+                        transition
+                        className={clsx(
+                            'rounded-xl border border-white/5 bg-white/5 p-1 [--anchor-gap:var(--spacing-1)] empty:invisible backdrop-blur-3xl',
+                            'transition duration-100 ease-in data-[leave]:data-[closed]:opacity-0 z-[210]'
+                        )}
+                    >
+                        {workspace.itemTypes.map((item) => (
+                            <ListboxOption
+                                key={item.name}
+                                value={item.name}
+                                className="group flex cursor-default items-center gap-2 rounded-lg py-1.5 px-3 select-none data-[focus]:bg-white/10"
+                            >
+                                <FaCheckCircle className="invisible size-4 fill-white group-data-[selected]:visible" />
+                                <div className="text-sm/6 text-white">{item.name}</div>
+                            </ListboxOption>
+                        ))}
+                    </ListboxOptions>
+                </Listbox>
+
+                <div className="w-full mt-4 relative h-10 flex justify-start items-center">
+                    <input type="number" onChange={(e) => { setModVal(+e.target.value) }} placeholder="Modifications" className="w-full h-full bg-transparent outline-none border-2 border-solid border-[rgba(255,255,255,.2)] rounded-full text-white pt-5 pb-5 pl-5 pr-10" />
                     <FaPenToSquare size="20px" className="ml-[-40px] hover:cursor-pointer" onClick={() => {
-                        const key = mod?.split(': ')[0] ?? ''
-                        const val = mod?.split(': ')[1] ?? ''
+                        const key = modKey ?? ''
+                        const val = modVal ?? 0
                         const newDiff = { ...diff }
 
                         newDiff[key] = { amount: +val, replace: false }

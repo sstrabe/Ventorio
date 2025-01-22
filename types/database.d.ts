@@ -1,3 +1,5 @@
+import { DocumentReference } from "firebase/firestore"
+
 interface Blank {
     [key: string]: {
         amount: number,
@@ -45,7 +47,8 @@ export interface Event {
     diff?: Diff,
     template?: string,
     manager?: string,
-    date?: Date
+    date?: Date,
+    instructor: string
 }
 
 export interface Template {
@@ -56,4 +59,10 @@ export interface Template {
 export interface ItemType {
     name: string,
     oneUse: boolean
+}
+
+export interface User {
+    name: string
+    email: string
+    workspaces: DocumentReference[]
 }

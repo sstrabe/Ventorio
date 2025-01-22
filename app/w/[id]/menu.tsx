@@ -1,6 +1,6 @@
 'use client';
 
-import { FaAngleRight, FaAngleLeft, FaPlus } from "react-icons/fa";
+import { FaAngleRight, FaAngleLeft, FaPlus, FaExclamationCircle } from "react-icons/fa";
 import Sidebar from "@/app/Sidebar";
 import { FaAngleDown } from "react-icons/fa6";
 import { useState, useEffect } from "react";
@@ -42,8 +42,11 @@ export default function Menu({ data }: { data: Workspace }) {
                 <div className="w-full h-full flex flex-col gap-2" style={{ display: collapsed ? "none" : "flex" }}>
                     <div className="w-full bg-[rgba(51,51,51,0.7)] h-16 rounded-md flex-row-reverse items-center p-2 gap-2" style={{ display: collapsed ? 'none' : 'flex' }}>
                         <button onClick={onCollapseClicked} className="w-8 h-full bg-background rounded-md grid items-center justify-center"><FaAngleLeft size="20" className="text-white hover:cursor-pointer" /></button>
-                        <div className="flex-grow h-full bg-background rounded-md flex flex-row gap-1 p-1">
-                            <Image src={imgURL ?? ''} alt="workspace logo" className="w-10 h-10" width={40} height={40}></Image>
+                        <div className="flex-grow h-full bg-background rounded-md flex flex-row gap-2 p-2 items-center">
+                            {imgURL 
+                            ? <Image src={imgURL ?? ''} alt="workspace logo" className="w-10 h-10" width={40} height={40}></Image> 
+                            : <FaExclamationCircle size={30} className="text-auxiliary1"/>
+                            }
                             <div className="flex-grow flex flex-col justify-center text-white">
                                 <span className="h-1/2">{data.name}</span>
                             </div>
@@ -69,7 +72,7 @@ export default function Menu({ data }: { data: Workspace }) {
                 </button>
             </nav>
 
-            <EventCreateModal templates={data.templates} visible={modal.name==='eventCreate'}  workspaceId={data.id}></EventCreateModal>
+            <EventCreateModal templates={data.templates} visible={modal.name==='eventCreate'}  workspace={data}></EventCreateModal>
             <CheckoutModal visible={modal.name==='checkoutModal'} workspace={data}></CheckoutModal>
         </div>
     )
