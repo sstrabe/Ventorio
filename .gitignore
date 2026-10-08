@@ -67,3 +67,9 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# Cloudflare / Vite
+.wrangler/
+.dev.vars
+dist/
+node_modules/.tmp/
