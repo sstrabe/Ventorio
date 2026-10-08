@@ -1,0 +1,28 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "ventorio",
+    "main": "worker/index.ts",
+    "compatibility_date": "2026-09-01",
+    // Only the production URL, which Cloudflare Access protects; no per-version preview URLs.
+    "preview_urls": false,
+    "assets": {
+        // The React app is static; only /api/* runs the Worker (free requests for everything else).
+        "not_found_handling": "single-page-application",
+        "run_worker_first": ["/api/*"]
+    },
+    "d1_databases": [
+        {
+            "binding": "DB",
+            "database_name": "ventorio",
+            // Replace with the id `npx wrangler d1 create ventorio` prints (see README).
+            "database_id": "00000000-0000-0000-0000-000000000000",
+            "migrations_dir": "migrations"
+        }
+    ],
+    "vars": {
+        // Cloudflare Access: your team domain and the application's AUD tag (see README).
+        "ACCESS_TEAM_DOMAIN": "",
+        "ACCESS_AUD": ""
+    },
+    "observability": { "enabled": true }
+}
